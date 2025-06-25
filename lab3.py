@@ -68,7 +68,10 @@ def is_collided(
 
 
 def draw_grid(size: int, spacing: int) -> None:
-    """Draw a grid with given size and spacing"""
+    """
+    Draw a grid with given size and spacing
+    """
+
     t.penup()
 
     # Draw vertical lines
@@ -86,14 +89,18 @@ def draw_grid(size: int, spacing: int) -> None:
         t.penup()
 
 def parse_point_string(point_Str: str) -> list[tuple[float, float]]:
+    '''
+    Turns coordinate strings to list of tuple points
+    Ex. "12.34,56.78 87.65,43.21" -> [(12.34, 56.78), (87.65, 43.21)]
+    '''
     def parse_points(val):
         return tuple(map(float, val.split(",")))
     return list(map(parse_points, point_Str.split()))
 
 def draw_maze() -> list[tuple[tuple[float, float], tuple[float, float]]]:
     """
-    Menggambar labirin yang perlu di tamatkan.
-    Mengembalikan garis-garis pada labirin
+    Menggambar skema pesawat dari ship_map.svg 
+    Mengembalikan garis-garis pada skema pesawat
     """
     line_list = []
     xml_tree = ET.parse('ship_map.svg')
