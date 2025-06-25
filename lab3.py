@@ -2,7 +2,7 @@ import turtle as t
 import math
 import xml.etree.ElementTree as ET
 
-stop_movement = False
+collided = False
 cockpit_coor = (680.0, -29.0)
 escape_pod_coor = (-409.0, -69.0)
 
@@ -25,10 +25,10 @@ def process_movement(direction: str, distance: float) -> None:
     '''
     Memproses perintah movement
     '''
-    global stop_movement
-    if stop_movement:
+    global collided
+    if collided:
         t.goto(cockpit_coor)
-        stop_movement = False
+        collided = False
         return
 
     # TODO lengkapi kode tersebut
@@ -42,9 +42,9 @@ def process_movement(direction: str, distance: float) -> None:
         t.setheading(0)
     t.forward(distance)
 
-    if stop_movement:
+    if collided:
         t.goto(cockpit_coor)
-        stop_movement = False
+        collided = False
         return
 
 
@@ -84,8 +84,8 @@ def is_collided(
 ) -> bool:
     """
     Mengecek apakah turtle  menabrak dinding
-    (implementasi oleh mentee)
     """
+    # TODO lengkapi kode tersebut
     return distance_to_line_segment(turtle_point, line_start, line_end) < 5
 
 
@@ -94,6 +94,7 @@ def draw_grid(size: int, spacing: int) -> None:
     Menggambarkan grid persegi dari (-size, -size) hingga (size, size)
     secara instan dengan warna #d3d3d3
     """
+    # TODO lengkapi kode tersebut
     t.tracer(0)
     old_color = t.color()
     t.color("#d3d3d3")
@@ -205,27 +206,40 @@ if __name__ == "__main__":
     t.penup()
 
     def check_all_collisions():
-        global stop_movement
+        global collided
         for line in line_list:
             if is_collided(t.pos(), line[0], line[1]):
-                # print("Collision detected!")
-                stop_movement = True
+                print("Dinding tertabrak! Kembali ke titik awal...")
+                collided = True
                 break
         screen.ontimer(check_all_collisions, 5)  # Call again after 10 ms
 
-    # self defined function to print coordinate
+    # OPTIONAL
+    # Buat callback ke onscreenclick() agar memudahkan perhitungan koordinat
     def buttonclick(x, y):
         print("You clicked at this coordinate({0},{1})".format(x, y))
-
     # onscreen function to send coordinate
     t.onscreenclick(buttonclick, 1)
 
+    # OPTIONAL
+    # Buat callback ke onkey() untuk mengtes setiap gerakan dengan keyboard
     screen.onkey(lambda: process_movement("up", 200), "Up")
     screen.onkey(lambda: process_movement("down", 10), "Down")
     screen.onkey(lambda: process_movement("left", 10), "Left")
     screen.onkey(lambda: process_movement("right", 10), "Right")
     screen.listen()
 
-    check_all_collisions()  # Start the recurring collision check
+    movement_path: list[tuple[str, float]] = []
 
+    check_all_collisions()  # Pengecekan tabrakan dimulai
+
+    for movement in movement_path:
+        direction = movement[0]
+        distance = movement[1]
+        process_movement(direction, distance)
+        if math.dist(t.pos(), escape_pod_coor) < 10:
+            print("Berhasil kabur!")
+            exit(0)
+
+    print("Path tidak mencapai destinasi...")
     t.done()
