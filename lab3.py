@@ -1,14 +1,19 @@
 import turtle as t
 import math
-import random
 import xml.etree.ElementTree as ET
 
 stop_movement = False
-cockpit_coor = (680.0,-29.0)
+cockpit_coor = (680.0, -29.0)
+escape_pod_coor = (-409.0, -69.0)
 
 
-def draw_line(point1: tuple[float, float], point2: tuple[float, float]) -> None:
-    """Draw a line between two points."""
+def draw_line(point1: tuple[float, float],
+              point2: tuple[float, float]) -> None:
+    '''
+    Menggambar garis antar 2 titik
+    Note: Pastikan turtle dimulai dan diakhirkan dengan penup
+    '''
+    # TODO lengkapi kode tersebut
     t.penup()
     t.goto(point1)
     t.pendown()
@@ -17,15 +22,16 @@ def draw_line(point1: tuple[float, float], point2: tuple[float, float]) -> None:
 
 
 def process_movement(direction: str, distance: float) -> None:
-    """Process movement commands."""
+    '''
+    Memproses perintah movement
+    '''
     global stop_movement
-    global cockpit_coor
-    print(stop_movement)
     if stop_movement:
-        print("movement")
         t.goto(cockpit_coor)
         stop_movement = False
         return
+
+    # TODO lengkapi kode tersebut
     if direction == "up":
         t.setheading(90)
     elif direction == "down":
@@ -35,8 +41,8 @@ def process_movement(direction: str, distance: float) -> None:
     elif direction == "right":
         t.setheading(0)
     t.forward(distance)
+
     if stop_movement:
-        print("movement")
         t.goto(cockpit_coor)
         stop_movement = False
         return
@@ -109,14 +115,17 @@ def draw_grid(size: int, spacing: int) -> None:
     t.update()
     t.tracer(1)
 
+
 def parse_point_string(point_Str: str) -> list[tuple[float, float]]:
     '''
-    Turns coordinate strings to list of tuple points
+    Mengubah string koordinat menjadi list dari tuple points
     Ex. "12.34,56.78 87.65,43.21" -> [(12.34, 56.78), (87.65, 43.21)]
     '''
+    # TODO lengkapi kode tersebut
     def parse_points(val):
         return tuple(map(float, val.split(",")))
     return list(map(parse_points, point_Str.split()))
+
 
 def draw_maze() -> list[tuple[tuple[float, float], tuple[float, float]]]:
     """
@@ -125,8 +134,9 @@ def draw_maze() -> list[tuple[tuple[float, float], tuple[float, float]]]:
     """
     line_list = []
     xml_tree = ET.parse('ship_map.svg')
-    namespace_length = len("{http://www.w3.org/2000/svg}")
-    for element in xml_tree.iter():
+    namespaces = {"ns": "http://www.w3.org/2000/svg"}
+    namespace_length = len(namespaces["ns"]) + 2
+    for element in xml_tree.iterfind(".//ns:*", namespaces):
         match element.tag[namespace_length:]:
             case "polyline":
                 points = parse_point_string(element.attrib["points"])
@@ -157,15 +167,17 @@ def draw_maze() -> list[tuple[tuple[float, float], tuple[float, float]]]:
     y_offset = 500
     t.tracer(0)
     for line in line_list:
-        line[0] = (line[0][0] * scale + x_offset, -line[0][1] * scale + y_offset)
-        line[1] = (line[1][0] * scale + x_offset, -line[1][1] * scale + y_offset)
+        line[0] = (line[0][0] * scale + x_offset,
+                   -line[0][1] * scale + y_offset)
+        line[1] = (line[1][0] * scale + x_offset,
+                   -line[1][1] * scale + y_offset)
         draw_line(line[0], line[1])
     for line in line_list:
         draw_line(line[0], line[1])
-
     t.update()
     t.tracer(1)
     return line_list
+
 
 def init_screen() -> t._Screen:
     '''
@@ -174,20 +186,19 @@ def init_screen() -> t._Screen:
     - Title "Ship Escape Simulator"
     Lalu kembalikan objek Screen tersebut
     '''
+    # TODO lengkapi kode tersebut
     screen = t.Screen()
     screen.setup(width=800, height=600)
     t.title("Maze Explorer")
     return screen
 
+
 if __name__ == "__main__":
-
-    escape_pod_coor = (-409.0,-69.0)
-
     screen = init_screen()
 
     draw_grid(1000, 10)
     line_list = draw_maze()
-    
+
     t.goto(cockpit_coor)
     t.showturtle()
     t.shapesize(2, 2)
