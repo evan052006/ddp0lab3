@@ -3,6 +3,9 @@ import math
 import random
 import xml.etree.ElementTree as ET
 
+stop_movement = False
+cockpit_coor = (680.0,-29.0)
+
 
 def draw_line(point1: tuple[float, float], point2: tuple[float, float]) -> None:
     """Draw a line between two points."""
@@ -15,6 +18,14 @@ def draw_line(point1: tuple[float, float], point2: tuple[float, float]) -> None:
 
 def process_movement(direction: str, distance: float) -> None:
     """Process movement commands."""
+    global stop_movement
+    global cockpit_coor
+    print(stop_movement)
+    if stop_movement:
+        print("movement")
+        t.goto(cockpit_coor)
+        stop_movement = False
+        return
     if direction == "up":
         t.setheading(90)
     elif direction == "down":
@@ -24,6 +35,11 @@ def process_movement(direction: str, distance: float) -> None:
     elif direction == "right":
         t.setheading(0)
     t.forward(distance)
+    if stop_movement:
+        print("movement")
+        t.goto(cockpit_coor)
+        stop_movement = False
+        return
 
 
 def distance_to_line_segment(
@@ -64,16 +80,18 @@ def is_collided(
     Mengecek apakah turtle  menabrak dinding
     (implementasi oleh mentee)
     """
-    return distance_to_line_segment(turtle_point, line_start, line_end) < 2.5
+    return distance_to_line_segment(turtle_point, line_start, line_end) < 5
 
 
 def draw_grid(size: int, spacing: int) -> None:
     """
-    Draw a grid with given size and spacing
+    Menggambarkan grid persegi dari (-size, -size) hingga (size, size)
+    secara instan dengan warna #d3d3d3
     """
-
+    t.tracer(0)
+    old_color = t.color()
+    t.color("#d3d3d3")
     t.penup()
-
     # Draw vertical lines
     for x in range(-size, size + 1, spacing):
         t.goto(x, -size)
@@ -87,6 +105,9 @@ def draw_grid(size: int, spacing: int) -> None:
         t.pendown()
         t.goto(size, y)
         t.penup()
+    t.color(old_color[0])
+    t.update()
+    t.tracer(1)
 
 def parse_point_string(point_Str: str) -> list[tuple[float, float]]:
     '''
@@ -99,7 +120,7 @@ def parse_point_string(point_Str: str) -> list[tuple[float, float]]:
 
 def draw_maze() -> list[tuple[tuple[float, float], tuple[float, float]]]:
     """
-    Menggambar skema pesawat dari ship_map.svg 
+    Menggambar skema pesawat dari ship_map.svg secara instan
     Mengembalikan garis-garis pada skema pesawat
     """
     line_list = []
@@ -133,45 +154,53 @@ def draw_maze() -> list[tuple[tuple[float, float], tuple[float, float]]]:
                 line_list.append([(x, y), (x, y + height)])
     scale = 1.1
     x_offset = -750
-    y_offset = -500
+    y_offset = 500
+    t.tracer(0)
     for line in line_list:
-        line[0] = (line[0][0] * scale + x_offset, line[0][1] * scale + y_offset)
-        line[1] = (line[1][0] * scale + x_offset, line[1][1] * scale + y_offset)
+        line[0] = (line[0][0] * scale + x_offset, -line[0][1] * scale + y_offset)
+        line[1] = (line[1][0] * scale + x_offset, -line[1][1] * scale + y_offset)
         draw_line(line[0], line[1])
+    for line in line_list:
+        draw_line(line[0], line[1])
+
+    t.update()
+    t.tracer(1)
     return line_list
+
+def init_screen() -> t._Screen:
+    '''
+    Initialisasi turtle Screen dengan
+    - Setup 800x600 window
+    - Title "Ship Escape Simulator"
+    Lalu kembalikan objek Screen tersebut
+    '''
+    screen = t.Screen()
+    screen.setup(width=800, height=600)
+    t.title("Maze Explorer")
+    return screen
 
 if __name__ == "__main__":
 
-    screen = t.Screen()
-    screen.setup(width=800, height=600)
+    escape_pod_coor = (-409.0,-69.0)
 
-    t.title("Maze Explorer")
-    t.speed(0)
-    t.hideturtle()
+    screen = init_screen()
 
-    t.tracer(0)
-    t.color("#d3d3d3")
-    t.pendown()
     draw_grid(1000, 10)
-    t.penup()
-    t.color("black")
     line_list = draw_maze()
-    t.tracer(1)
-    t.update()
     
-    home_coor = (-410.0,69)
-    t.goto(home_coor)
+    t.goto(cockpit_coor)
     t.showturtle()
     t.shapesize(2, 2)
     t.penup()
 
     def check_all_collisions():
+        global stop_movement
         for line in line_list:
             if is_collided(t.pos(), line[0], line[1]):
-                print("Collision detected!")
-                t.goto(home_coor)  # Reset position to the center
+                # print("Collision detected!")
+                stop_movement = True
                 break
-        screen.ontimer(check_all_collisions, 10)  # Call again after 10 ms
+        screen.ontimer(check_all_collisions, 5)  # Call again after 10 ms
 
     # self defined function to print coordinate
     def buttonclick(x, y):
@@ -180,7 +209,7 @@ if __name__ == "__main__":
     # onscreen function to send coordinate
     t.onscreenclick(buttonclick, 1)
 
-    screen.onkey(lambda: process_movement("up", 10), "Up")
+    screen.onkey(lambda: process_movement("up", 200), "Up")
     screen.onkey(lambda: process_movement("down", 10), "Down")
     screen.onkey(lambda: process_movement("left", 10), "Left")
     screen.onkey(lambda: process_movement("right", 10), "Right")
