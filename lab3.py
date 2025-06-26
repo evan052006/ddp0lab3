@@ -5,6 +5,8 @@ import xml.etree.ElementTree as ET
 collided = False
 cockpit_coor = (680.0, 21.0)
 escape_pod_coor = (-409.0, -19.0)
+trail: list[tuple[tuple[float, float], tuple[float, float]]] = []
+line_list: list[tuple[tuple[float, float], tuple[float, float]]] = []
 
 
 def draw_line(point1: tuple[float, float], point2: tuple[float, float]) -> None:
@@ -20,15 +22,34 @@ def draw_line(point1: tuple[float, float], point2: tuple[float, float]) -> None:
     t.penup()
 
 
+def remove_trail() -> None:
+    """
+    Menghapus jejak yang telah digambar
+    """
+    global trail, line_list
+    t.clear()
+    t.penup()
+    draw_grid(1000, 10)
+    line_list = draw_maze()
+    t.tracer(0)
+    t.goto(cockpit_coor)
+    t.tracer(1)
+    t.pendown()
+    trail = []
+
+
 def process_movement(direction: str, distance: float) -> None:
     """
     Memproses perintah movement
     """
-    global collided
+    global collided, trail
     if collided:
         t.goto(cockpit_coor)
         collided = False
         return
+
+    old_position = t.position()
+    old_color = t.color()
 
     # TODO lengkapi kode tersebut
     if direction == "up":
@@ -41,8 +62,18 @@ def process_movement(direction: str, distance: float) -> None:
         t.setheading(0)
     t.forward(distance)
 
+    new_position = t.position()
+    trail.append((old_position, new_position))
+    t.color("blue")
+    t.tracer(0)
+    draw_line(old_position, new_position)
+    t.tracer(1)
+
+    t.color(old_color[0])
+
     if collided:
         t.goto(cockpit_coor)
+        remove_trail()
         collided = False
         return
 
