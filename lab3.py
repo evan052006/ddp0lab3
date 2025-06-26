@@ -264,7 +264,9 @@ if __name__ == "__main__":
         direction = movement[0]
         distance = movement[1]
         process_movement(direction, distance)
-        if math.dist(t.pos(), escape_pod_coor) < 10:
+        while moving:
+            continue
+        if math.dist(t.pos(), escape_pod_coor) < 50:
             print("Berhasil kabur!")
             exit(0)
 
