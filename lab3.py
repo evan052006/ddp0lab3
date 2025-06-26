@@ -3,16 +3,15 @@ import math
 import xml.etree.ElementTree as ET
 
 collided = False
-cockpit_coor = (680.0, -29.0)
-escape_pod_coor = (-409.0, -69.0)
+cockpit_coor = (680.0, 21.0)
+escape_pod_coor = (-409.0, -19.0)
 
 
-def draw_line(point1: tuple[float, float],
-              point2: tuple[float, float]) -> None:
-    '''
+def draw_line(point1: tuple[float, float], point2: tuple[float, float]) -> None:
+    """
     Menggambar garis antar 2 titik
     Note: Pastikan turtle dimulai dan diakhirkan dengan penup
-    '''
+    """
     # TODO lengkapi kode tersebut
     t.penup()
     t.goto(point1)
@@ -22,9 +21,9 @@ def draw_line(point1: tuple[float, float],
 
 
 def process_movement(direction: str, distance: float) -> None:
-    '''
+    """
     Memproses perintah movement
-    '''
+    """
     global collided
     if collided:
         t.goto(cockpit_coor)
@@ -83,7 +82,8 @@ def is_collided(
     line_end: tuple[float, float],
 ) -> bool:
     """
-    Mengecek apakah turtle  menabrak dinding
+    Mengecek apakah turtle menabrak dinding
+    (tabrakan terjadi jika jarak turtle dengan dinding kurang dari 5)
     """
     # TODO lengkapi kode tersebut
     return distance_to_line_segment(turtle_point, line_start, line_end) < 5
@@ -118,14 +118,20 @@ def draw_grid(size: int, spacing: int) -> None:
 
 
 def parse_point_string(point_Str: str) -> list[tuple[float, float]]:
-    '''
+    """
     Mengubah string koordinat menjadi list dari tuple points
     Ex. "12.34,56.78 87.65,43.21" -> [(12.34, 56.78), (87.65, 43.21)]
-    '''
+    """
+
     # TODO lengkapi kode tersebut
-    def parse_points(val):
-        return tuple(map(float, val.split(",")))
-    return list(map(parse_points, point_Str.split()))
+    points_list = []
+    point_pairs = point_Str.strip().split()
+    for pair in point_pairs:
+        x_str, y_str = pair.split(",")
+        x = float(x_str)
+        y = float(y_str)
+        points_list.append((x, y))
+    return points_list
 
 
 def draw_maze() -> list[tuple[tuple[float, float], tuple[float, float]]]:
@@ -134,15 +140,15 @@ def draw_maze() -> list[tuple[tuple[float, float], tuple[float, float]]]:
     Mengembalikan garis-garis pada skema pesawat
     """
     line_list = []
-    xml_tree = ET.parse('ship_map.svg')
+    xml_tree = ET.parse("ship_map.svg")
     namespaces = {"ns": "http://www.w3.org/2000/svg"}
     namespace_length = len(namespaces["ns"]) + 2
     for element in xml_tree.iterfind(".//ns:*", namespaces):
         match element.tag[namespace_length:]:
             case "polyline":
                 points = parse_point_string(element.attrib["points"])
-                for i in range(len(points)-1):
-                    line_list.append([points[i], points[i+1]])
+                for i in range(len(points) - 1):
+                    line_list.append([points[i], points[i + 1]])
             case "line":
                 x1 = float(element.attrib["x1"])
                 x2 = float(element.attrib["x2"])
@@ -151,8 +157,8 @@ def draw_maze() -> list[tuple[tuple[float, float], tuple[float, float]]]:
                 line_list.append([(x1, y1), (x2, y2)])
             case "polygon":
                 points = parse_point_string(element.attrib["points"])
-                for i in range(len(points)-1):
-                    line_list.append([points[i], points[i+1]])
+                for i in range(len(points) - 1):
+                    line_list.append([points[i], points[i + 1]])
                 line_list.append([points[-1], points[0]])
             case "rect":
                 x = float(element.attrib["x"])
@@ -165,13 +171,11 @@ def draw_maze() -> list[tuple[tuple[float, float], tuple[float, float]]]:
                 line_list.append([(x, y), (x, y + height)])
     scale = 1.1
     x_offset = -750
-    y_offset = 500
+    y_offset = 550
     t.tracer(0)
     for line in line_list:
-        line[0] = (line[0][0] * scale + x_offset,
-                   -line[0][1] * scale + y_offset)
-        line[1] = (line[1][0] * scale + x_offset,
-                   -line[1][1] * scale + y_offset)
+        line[0] = (line[0][0] * scale + x_offset, -line[0][1] * scale + y_offset)
+        line[1] = (line[1][0] * scale + x_offset, -line[1][1] * scale + y_offset)
         draw_line(line[0], line[1])
     for line in line_list:
         draw_line(line[0], line[1])
@@ -181,16 +185,16 @@ def draw_maze() -> list[tuple[tuple[float, float], tuple[float, float]]]:
 
 
 def init_screen() -> t._Screen:
-    '''
+    """
     Initialisasi turtle Screen dengan
-    - Setup 800x600 window
-    - Title "Ship Escape Simulator"
+    - Setup window seukuran 1500x1000
+    - Title "COSMIC Escape Simulator"
     Lalu kembalikan objek Screen tersebut
-    '''
+    """
     # TODO lengkapi kode tersebut
     screen = t.Screen()
-    screen.setup(width=800, height=600)
-    t.title("Maze Explorer")
+    screen.setup(width=1500, height=1000)
+    t.title("COSMIC Escape Simulator")
     return screen
 
 
@@ -202,7 +206,6 @@ if __name__ == "__main__":
 
     t.goto(cockpit_coor)
     t.showturtle()
-    t.shapesize(2, 2)
     t.penup()
 
     def check_all_collisions():
@@ -218,12 +221,13 @@ if __name__ == "__main__":
     # Buat callback ke onscreenclick() agar memudahkan perhitungan koordinat
     def buttonclick(x, y):
         print("You clicked at this coordinate({0},{1})".format(x, y))
+
     # onscreen function to send coordinate
     t.onscreenclick(buttonclick, 1)
 
     # OPTIONAL
-    # Buat callback ke onkey() untuk mengtes setiap gerakan dengan keyboard
-    screen.onkey(lambda: process_movement("up", 200), "Up")
+    # Buat callback ke onkey() untuk mengetes setiap gerakan dengan keyboard
+    screen.onkey(lambda: process_movement("up", 10), "Up")
     screen.onkey(lambda: process_movement("down", 10), "Down")
     screen.onkey(lambda: process_movement("left", 10), "Left")
     screen.onkey(lambda: process_movement("right", 10), "Right")
