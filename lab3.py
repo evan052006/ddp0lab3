@@ -2,54 +2,46 @@ import turtle as t
 import math
 import xml.etree.ElementTree as ET
 
+moving = False
 collided = False
 cockpit_coor = (680.0, 21.0)
 escape_pod_coor = (-409.0, -19.0)
 trail: list[tuple[tuple[float, float], tuple[float, float]]] = []
 line_list: list[tuple[tuple[float, float], tuple[float, float]]] = []
+tracker = t.Turtle()
+tracker.color("blue")
+tracker.hideturtle()
 
-
-def draw_line(point1: tuple[float, float], point2: tuple[float, float]) -> None:
+def draw_line(point1: tuple[float, float], point2: tuple[float, float], turtle: t.Turtle) -> None:
     """
     Menggambar garis antar 2 titik
     Note: Pastikan turtle dimulai dan diakhirkan dengan penup
     """
     # TODO lengkapi kode tersebut
-    t.penup()
-    t.goto(point1)
-    t.pendown()
-    t.goto(point2)
-    t.penup()
-
-
-def remove_trail() -> None:
-    """
-    Menghapus jejak yang telah digambar
-    """
-    global trail, line_list
-    t.clear()
-    t.penup()
-    draw_grid(1000, 10)
-    line_list = draw_maze()
-    t.tracer(0)
-    t.goto(cockpit_coor)
-    t.tracer(1)
-    t.pendown()
-    trail = []
+    turtle.penup()
+    turtle.goto(point1)
+    turtle.pendown()
+    turtle.goto(point2)
+    turtle.penup()
 
 
 def process_movement(direction: str, distance: float) -> None:
     """
     Memproses perintah movement
     """
-    global collided, trail
+    global collided, tracker, moving
+    if moving: return
+
+    moving = True
+    
     if collided:
         t.goto(cockpit_coor)
+        tracker.clear()
         collided = False
+        moving = False
         return
 
     old_position = t.position()
-    old_color = t.color()
 
     # TODO lengkapi kode tersebut
     if direction == "up":
@@ -63,19 +55,19 @@ def process_movement(direction: str, distance: float) -> None:
     t.forward(distance)
 
     new_position = t.position()
-    trail.append((old_position, new_position))
-    t.color("blue")
     t.tracer(0)
-    draw_line(old_position, new_position)
+    draw_line(old_position, new_position, tracker)
     t.tracer(1)
-
-    t.color(old_color[0])
-
+    t.update()
+    
     if collided:
         t.goto(cockpit_coor)
-        remove_trail()
+        tracker.clear()
         collided = False
+        moving = False
         return
+
+    moving = False
 
 
 def distance_to_line_segment(
@@ -117,7 +109,7 @@ def is_collided(
     (tabrakan terjadi jika jarak turtle dengan dinding kurang dari 5)
     """
     # TODO lengkapi kode tersebut
-    return distance_to_line_segment(turtle_point, line_start, line_end) < 5
+    return distance_to_line_segment(turtle_point, line_start, line_end) < 7.5
 
 
 def draw_grid(size: int, spacing: int) -> None:
@@ -207,9 +199,9 @@ def draw_maze() -> list[tuple[tuple[float, float], tuple[float, float]]]:
     for line in line_list:
         line[0] = (line[0][0] * scale + x_offset, -line[0][1] * scale + y_offset)
         line[1] = (line[1][0] * scale + x_offset, -line[1][1] * scale + y_offset)
-        draw_line(line[0], line[1])
+        draw_line(line[0], line[1], t)
     for line in line_list:
-        draw_line(line[0], line[1])
+        draw_line(line[0], line[1], t)
     t.update()
     t.tracer(1)
     return line_list
