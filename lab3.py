@@ -59,6 +59,8 @@ def process_movement(direction: str, distance: float) -> None:
     draw_line(old_position, new_position, tracker)
     t.tracer(1)
     t.update()
+
+    print(f"(\"{direction}\",10), ", end="")
     
     if collided:
         t.goto(cockpit_coor)
@@ -217,6 +219,7 @@ def init_screen() -> t._Screen:
     # TODO lengkapi kode tersebut
     screen = t.Screen()
     screen.setup(width=1500, height=1000)
+    screen.screensize(canvwidth=1000, canvheight=1200)
     t.title("COSMIC Escape Simulator")
     return screen
 
@@ -238,7 +241,7 @@ if __name__ == "__main__":
                 print("Dinding tertabrak! Kembali ke titik awal...")
                 collided = True
                 break
-        screen.ontimer(check_all_collisions, 5)  # Call again after 10 ms
+        screen.ontimer(check_all_collisions, 100)  # Call again after 10 ms
 
     # OPTIONAL
     # Buat callback ke onscreenclick() agar memudahkan perhitungan koordinat
@@ -248,17 +251,104 @@ if __name__ == "__main__":
     # onscreen function to send coordinate
     t.onscreenclick(buttonclick, 1)
 
-    # OPTIONAL
-    # Buat callback ke onkey() untuk mengetes setiap gerakan dengan keyboard
-    screen.onkey(lambda: process_movement("up", 10), "Up")
-    screen.onkey(lambda: process_movement("down", 10), "Down")
-    screen.onkey(lambda: process_movement("left", 10), "Left")
-    screen.onkey(lambda: process_movement("right", 10), "Right")
     screen.listen()
 
+    # OPTIONAL
+    # Buat callback ke onkey() untuk mengetes setiap gerakan dengan keyboard
+    # screen.onkey(lambda: process_movement("up", 10), "Up")
+    # screen.onkey(lambda: process_movement("down", 10), "Down")
+    # screen.onkey(lambda: process_movement("left", 10), "Left")
+    # screen.onkey(lambda: process_movement("right", 10), "Right")
+    
+
     movement_path: list[tuple[str, float]] = []
+    movement_path = [("up",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("down",10),
+    ("down",10), ("down",10), ("down",10), ("down",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10),
+    ("left",10), ("up",10), ("up",10), ("up",10), ("up",10), ("left",10), ("left",10), ("left",10), ("up",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10),
+    ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("left",10), ("left",10), ("left",10),
+    ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10),
+    ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("right",10), ("right",10), ("right",10), ("right",10), ("down",10), ("down",10), ("down",10), ("left",10),
+    ("left",10), ("left",10), ("left",10), ("left",10), ("down",10), ("down",10), ("down",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10),
+    ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("down",10), ("down",10), ("down",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10),
+    ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("down",10), ("left",10),
+    ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("down",10), ("down",10), ("down",10), ("left",10), ("left",10), ("left",10),
+    ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("right",10), ("right",10),
+    ("right",10), ("right",10), ("right",10), ("right",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("left",10), ("up",10), ("left",10), ("left",10),
+    ("left",10), ("left",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10),
+    ("up",10), ("up",10), ("up",10), ("up",10), ("left",10), ("left",10), ("left",10), ("up",10), ("up",10), ("up",10), ("up",10), ("right",10), ("right",10), ("right",10), ("right",10),
+    ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10),
+    ("down",10), ("down",10), ("down",10), ("down",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("up",10), ("up",10), ("up",10), ("up",10), ("right",10),
+    ("right",10), ("right",10), ("right",10), ("right",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("right",10), ("right",10), ("right",10), ("right",10),
+    ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10),
+    ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10),
+    ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("up",10), ("up",10),
+    ("up",10), ("up",10), ("up",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("up",10),
+    ("up",10), ("up",10), ("up",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10),
+    ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10),
+    ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10),
+    ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("up",10), ("up",10), ("up",10), ("right",10), ("right",10), ("right",10), ("right",10),
+    ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10),
+    ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10),
+    ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10),
+    ("right",10), ("right",10), ("up",10), ("up",10), ("up",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), 
+("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10),
+                     ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10),
+                     ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10),
+                     ("up",10), ("up",10), ("up",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10),
+                     ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10),
+                     ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10),
+                     ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10),
+                     ("right",10), ("right",10), ("right",10), ("right",10), ("up",10), ("up",10), ("up",10), ("left",10), ("up",10), ("left",10), ("left",10), ("left",10),
+                     ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10),
+                     ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10),
+                     ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10),
+                     ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("down",10), ("left",10),
+                     ("down",10), ("down",10), ("down",10), ("left",10), ("left",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10),
+                     ("down",10), ("right",10), ("down",10), ("right",10), ("down",10), ("right",10), ("right",10), ("right",10), ("down",10), ("down",10), ("down",10), ("right",10),
+                     ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10),
+                     ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10),
+                     ("right",10), ("right",10), ("right",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10),
+                     ("down",10), ("down",10), ("right",10), ("right",10), ("right",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10),
+                     ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("left",10), ("left",10), ("left",10),
+                     ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10),
+                     ("down",10), ("right",10), ("right",10), ("right",10), ("right",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10),
+                     ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("right",10), ("right",10), ("right",10),
+                     ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10),
+                     ("right",10), ("right",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10),
+                     ("down",10), ("down",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10),
+                     ("left",10), ("left",10), ("left",10), ("left",10), ("down",10), ("down",10), ("down",10), ("down",10), ("left",10), ("left",10), ("left",10), ("left",10),
+                     ("left",10), ("left",10), ("left",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10),
+                     ("down",10), ("down",10), ("down",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10),
+                     ("up",10), ("up",10), ("up",10), ("left",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("right",10), ("right",10),
+                     ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("up",10), ("up",10), ("up",10), ("right",10), ("right",10), ("right",10), ("right",10),
+                     ("right",10), ("right",10), ("right",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("left",10),
+                     ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("up",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("up",10),
+                     ("up",10), ("up",10), ("right",10), ("right",10), ("right",10), ("right",10), ("up",10), ("right",10), ("right",10), ("right",10), ("right",10), ("up",10), ("up",10),
+                     ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10),
+                     ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("left",10), ("left",10),
+                     ("left",10), ("left",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10),
+                     ("up",10), ("up",10), ("up",10), ("up",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("down",10), ("down",10), ("down",10), ("down",10),
+                     ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("left",10), ("left",10), ("left",10),
+                     ("left",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10),
+                     ("left",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10),
+                     ("down",10), ("down",10), ("down",10), ("down",10), ("right",10), ("right",10), ("right",10), ("right",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10),
+                     ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10),
+                     ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10),
+                     ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10),
+                     ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("left",10),
+                     ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10),
+                     ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10),
+                     ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10),
+                     ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10),
+                     ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("down",10), ("left",10),
+                     ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("left",10), ("up",10), ("up",10), ("up",10),
+                     ("up",10), ("up",10), ("up",10), ("up",10), ("up",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10), ("right",10),
+                     ("down",10), ("down",10), ("down",10), ("down",10), ("left",10), ("left",10), ("left",10), ("left",10)]
 
     check_all_collisions()  # Pengecekan tabrakan dimulai
+    
+    t.speed(0)
+    t.delay(0)
 
     for movement in movement_path:
         direction = movement[0]
@@ -266,9 +356,9 @@ if __name__ == "__main__":
         process_movement(direction, distance)
         while moving:
             continue
-        if math.dist(t.pos(), escape_pod_coor) < 50:
+        if math.dist(t.pos(), escape_pod_coor) < 20:
             print("Berhasil kabur!")
-            exit(0)
+            t.done()
 
     print("Path tidak mencapai destinasi...")
     t.done()
