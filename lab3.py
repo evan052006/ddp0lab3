@@ -6,13 +6,31 @@ moving = False
 collided = False
 cockpit_coor = (680.0, 21.0)
 escape_pod_coor = (-409.0, -19.0)
-trail: list[tuple[tuple[float, float], tuple[float, float]]] = []
+trail = []
 line_list: list[tuple[tuple[float, float], tuple[float, float]]] = []
 tracker = t.Turtle()
 tracker.color("blue")
 tracker.hideturtle()
 
-def draw_line(point1: tuple[float, float], point2: tuple[float, float], turtle: t.Turtle) -> None:
+waypoint_hints = [(680.00,21.00), (680.00,31.00), (570.00,31.00), (570.00,-19.00), (460.00,-19.00), (460.00,21.00), (430.00,21.00), (430.00,31.00), (300.00,31.00),
+                  (300.00,81.00), (200.00,81.00), (200.00,-49.00), (240.00,-49.00), (240.00,-79.00), (190.00,-79.00), (190.00,-109.00), (300.00,-109.00), (300.00,-139.00),
+                  (130.00,-139.00), (130.00,-149.00), (40.00,-149.00), (40.00,-179.00), (-40.00,-179.00), (-40.00,-99.00), (20.00,-99.00), (20.00,-29.00), (10.00,-29.00),
+                  (10.00,-19.00), (-30.00,-19.00), (-30.00,161.00), (-60.00,161.00), (-60.00,201.00), (110.00,201.00), (110.00,161.00), (160.00,161.00), (160.00,201.00),
+                  (210.00,201.00), (210.00,151.00), (250.00,151.00), (250.00,241.00), (-70.00,241.00), (-70.00,291.00), (30.00,291.00), (30.00,331.00), (-430.00,331.00),
+                  (-430.00,361.00), (20.00,361.00), (20.00,391.00), (-450.00,391.00), (-450.00,421.00), (10.00,421.00), (10.00,451.00), (0.00,451.00), (0.00,461.00),
+                  (-490.00,461.00), (-490.00,451.00), (-500.00,451.00), (-500.00,421.00), (-520.00,421.00), (-520.00,341.00), (-510.00,341.00), (-510.00,331.00),
+                  (-500.00,331.00), (-500.00,321.00), (-470.00,321.00), (-470.00,291.00), (-210.00,291.00), (-210.00,181.00), (-180.00,181.00), (-180.00,21.00),
+                  (-210.00,21.00), (-210.00,-109.00), (-170.00,-109.00), (-170.00,-269.00), (-10.00,-269.00), (-10.00,-389.00), (-150.00,-389.00), (-150.00,-429.00),
+                  (-220.00,-429.00), (-220.00,-379.00), (-270.00,-379.00), (-270.00,-409.00), (-360.00,-409.00), (-360.00,-379.00), (-370.00,-379.00), (-370.00,-299.00),
+                  (-300.00,-299.00), (-300.00,-269.00), (-230.00,-269.00), (-230.00,-169.00), (-300.00,-169.00), (-300.00,-159.00), (-350.00,-159.00), (-350.00,-129.00),
+                  (-310.00,-129.00), (-310.00,-119.00), (-270.00,-119.00), (-270.00,171.00), (-310.00,171.00), (-310.00,121.00), (-360.00,121.00), (-360.00,161.00),
+                  (-410.00,161.00), (-410.00,121.00), (-460.00,121.00), (-460.00,171.00), (-500.00,171.00), (-500.00,121.00), (-570.00,121.00), (-570.00,-29.00), (-530.00,-29.00),
+                  (-530.00,91.00), (-300.00,91.00), (-300.00,-89.00), (-500.00,-89.00), (-500.00,51.00), (-340.00,51.00), (-340.00,-59.00), (-450.00,-59.00),
+                  (-450.00,21.00), (-380.00,21.00), (-380.00,-19.00)]
+
+
+def draw_line(point1: tuple[float, float],
+              point2: tuple[float, float], turtle: t.Turtle) -> None:
     """
     Menggambar garis antar 2 titik
     Note: Pastikan turtle dimulai dan diakhirkan dengan penup
@@ -26,23 +44,9 @@ def draw_line(point1: tuple[float, float], point2: tuple[float, float], turtle: 
 
 
 def process_movement(direction: str, distance: float) -> None:
-    """
-    Memproses perintah movement
-    """
-    global collided, tracker, moving
-    if moving: return
-
-    moving = True
-    
-    if collided:
-        t.goto(cockpit_coor)
-        tracker.clear()
-        collided = False
-        moving = False
-        return
-
-    old_position = t.position()
-
+    '''
+    Menggerakkan turtle berdasarkan perintah movement
+    '''
     # TODO lengkapi kode tersebut
     if direction == "up":
         t.setheading(90)
@@ -54,14 +58,53 @@ def process_movement(direction: str, distance: float) -> None:
         t.setheading(0)
     t.forward(distance)
 
+
+def move(direction: str, distance: float) -> None:
+    """
+    Memproses dan mendeteksi setiap gerakan turtle
+    """
+    # Keyword global agar variabel berikut bisa diakses dari scope local
+    global collided, moving, trail
+
+    # Move dibatalkan jika masih ada movement lain
+    if moving:
+        return
+
+    moving = True
+
+    # Jika tertabrak, ulang dari awal (dan reset tracker)
+    if collided:
+        t.goto(cockpit_coor)
+        tracker.clear()
+        collided = False
+        moving = False
+        return
+
+    # Simpan posisi sebelum gerakan
+    old_position = t.position()
+    old_angle = t.heading()
+
+    # Proses gerakan (turtle digerakkan)
+    process_movement(direction, distance)
+
+    new_angle = t.heading()
+
+    if old_angle != new_angle:
+        trail.append(old_position)
+        marker = t.Turtle(shape="circle")
+        marker.turtlesize(0.5)
+        marker.penup()
+        marker.goto(old_position)
+        marker.stamp()
+
+    # Gambar tracker turtle
     new_position = t.position()
     t.tracer(0)
     draw_line(old_position, new_position, tracker)
     t.tracer(1)
     t.update()
 
-    print(f"(\"{direction}\",10), ", end="")
-    
+    # Kita cek collision lagi
     if collided:
         t.goto(cockpit_coor)
         tracker.clear()
@@ -165,27 +208,35 @@ def draw_maze() -> list[tuple[tuple[float, float], tuple[float, float]]]:
     Mengembalikan garis-garis pada skema pesawat
     """
     line_list = []
-    xml_tree = ET.parse("ship_map.svg")
-    namespaces = {"ns": "http://www.w3.org/2000/svg"}
+    xml_tree = ET.parse("ship_map.svg")  # Load .svg sebagai pohon xml
+    namespaces = {"ns": "http://www.w3.org/2000/svg"}  # Set namespace svg
+    # Format namespace {<namespace>}<tag> (abaikan < dan >)
+    # maka +2 kurung luar
     namespace_length = len(namespaces["ns"]) + 2
+    # Gunakan library untuk list semua elemen dibawah namespace svg
     for element in xml_tree.iterfind(".//ns:*", namespaces):
+        # Ambil tagnya saja (skip namespace dan kurung kurawal)
         match element.tag[namespace_length:]:
             case "polyline":
+                # Polyline adalah beberapa garis dihubungkan satu sama lain
                 points = parse_point_string(element.attrib["points"])
                 for i in range(len(points) - 1):
                     line_list.append([points[i], points[i + 1]])
             case "line":
+                # Line adalah 1 garis
                 x1 = float(element.attrib["x1"])
                 x2 = float(element.attrib["x2"])
                 y1 = float(element.attrib["y1"])
                 y2 = float(element.attrib["y2"])
                 line_list.append([(x1, y1), (x2, y2)])
             case "polygon":
+                # Polygon adalah polyline dimana titik akhir dan awal terhubung
                 points = parse_point_string(element.attrib["points"])
                 for i in range(len(points) - 1):
                     line_list.append([points[i], points[i + 1]])
                 line_list.append([points[-1], points[0]])
             case "rect":
+                # Rectangle = persegi panjang
                 x = float(element.attrib["x"])
                 y = float(element.attrib["y"])
                 width = float(element.attrib["width"])
@@ -197,15 +248,17 @@ def draw_maze() -> list[tuple[tuple[float, float], tuple[float, float]]]:
     scale = 1.1
     x_offset = -750
     y_offset = 550
+    # Fungsi tracer mengnonaktifkan update otomatis layar secara sementara
     t.tracer(0)
     for line in line_list:
-        line[0] = (line[0][0] * scale + x_offset, -line[0][1] * scale + y_offset)
-        line[1] = (line[1][0] * scale + x_offset, -line[1][1] * scale + y_offset)
+        # Gambar setiap garis berdasarkan offset dan scale
+        line[0] = (line[0][0] * scale + x_offset,
+                   -line[0][1] * scale + y_offset)
+        line[1] = (line[1][0] * scale + x_offset,
+                   -line[1][1] * scale + y_offset)
         draw_line(line[0], line[1], t)
-    for line in line_list:
-        draw_line(line[0], line[1], t)
-    t.update()
-    t.tracer(1)
+    t.update()  # Update layar secara manual
+    t.tracer(1)  # Aktifkan lagi update otomatis layar
     return line_list
 
 
@@ -225,15 +278,19 @@ def init_screen() -> t._Screen:
 
 
 if __name__ == "__main__":
+    # Inisialisasi layar
     screen = init_screen()
 
+    # Gambar grid dan pesawat
     draw_grid(1000, 10)
     line_list = draw_maze()
 
+    # Inisasi turtle
     t.goto(cockpit_coor)
     t.showturtle()
     t.penup()
 
+    # Mendefinisikan pengecekan tabrakan terharap semua garis
     def check_all_collisions():
         global collided
         for line in line_list:
@@ -251,14 +308,15 @@ if __name__ == "__main__":
     # onscreen function to send coordinate
     t.onscreenclick(buttonclick, 1)
 
-    screen.listen()
-
     # OPTIONAL
     # Buat callback ke onkey() untuk mengetes setiap gerakan dengan keyboard
     # screen.onkey(lambda: process_movement("up", 10), "Up")
     # screen.onkey(lambda: process_movement("down", 10), "Down")
     # screen.onkey(lambda: process_movement("left", 10), "Left")
     # screen.onkey(lambda: process_movement("right", 10), "Right")
+
+    # Set fokus pada turtle screen
+    screen.listen()
     
 
     movement_path: list[tuple[str, float]] = []
@@ -346,17 +404,20 @@ if __name__ == "__main__":
                      ("down",10), ("down",10), ("down",10), ("down",10), ("left",10), ("left",10), ("left",10), ("left",10)]
 
     check_all_collisions()  # Pengecekan tabrakan dimulai
-    
+
+    # Penggambaran dipercepat
     t.speed(0)
     t.delay(0)
 
+    # Proses setiap gerakan
     for movement in movement_path:
         direction = movement[0]
         distance = movement[1]
-        process_movement(direction, distance)
+        move(direction, distance)
         while moving:
             continue
         if math.dist(t.pos(), escape_pod_coor) < 20:
+            print(trail)
             print("Berhasil kabur!")
             t.done()
 
