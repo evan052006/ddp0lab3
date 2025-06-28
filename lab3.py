@@ -136,10 +136,10 @@ def is_collided(
 ) -> bool:
     """
     Mengecek apakah turtle menabrak dinding
-    (tabrakan terjadi jika jarak turtle dengan dinding kurang dari 1)
+    (tabrakan terjadi jika jarak turtle dengan dinding kurang dari 5)
     """
     # TODO lengkapi kode tersebut
-    return distance_to_line_segment(turtle_point, line_start, line_end) < 1
+    return distance_to_line_segment(turtle_point, line_start, line_end) < 5
 
 
 def draw_grid(size: int, spacing: int) -> None:
@@ -293,14 +293,15 @@ if __name__ == "__main__":
 
     # OPTIONAL
     # Buat callback ke onkey() untuk mengetes setiap gerakan dengan keyboard
-    # screen.onkey(lambda: process_movement("up", 10), "Up")
-    # screen.onkey(lambda: process_movement("down", 10), "Down")
-    # screen.onkey(lambda: process_movement("left", 10), "Left")
-    # screen.onkey(lambda: process_movement("right", 10), "Right")
+    screen.onkey(lambda: move("up", 10), "Up")
+    screen.onkey(lambda: move("down", 10), "Down")
+    screen.onkey(lambda: move("left", 10), "Left")
+    screen.onkey(lambda: move("right", 10), "Right")
 
     # Set fokus pada turtle screen
     screen.listen()
-
+    movement_path = []
+    '''
     movement_path = [
         ("left", 60),
         ("up", 30),
@@ -405,7 +406,7 @@ if __name__ == "__main__":
         ("right", 40),
         ("down", 20),
         ("left", 10),
-    ]
+    ]'''
 
     check_all_collisions()  # Pengecekan tabrakan dimulai
 
