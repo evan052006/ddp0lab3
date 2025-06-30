@@ -194,8 +194,8 @@ def draw_maze() -> list[tuple[tuple[float, float], tuple[float, float]]]:
     Mengembalikan garis-garis pada skema pesawat
     """
     line_list = []
-    xml_tree = ET.parse("ship_map.svg")  # Load .svg sebagai pohon xml
-    namespaces = {"ns": "http://www.w3.org/2000/svg"}  # Set namespace svg
+    xml_tree = ET.parse("ship_map.cosmic")  # Load .svg sebagai pohon xml
+    namespaces = {"ns": "http://cosmic.cs"}  # Set namespace svg
     # Format namespace {<namespace>}<tag> (abaikan < dan >)
     # maka +2 kurung luar
     namespace_length = len(namespaces["ns"]) + 2
@@ -283,13 +283,13 @@ if __name__ == "__main__":
                 break
         screen.ontimer(check_all_collisions, 1)  # Call again after 1 ms
 
-    # OPTIONAL
+    """# OPTIONAL
     # Buat callback ke onscreenclick() agar memudahkan perhitungan koordinat
     def buttonclick(x, y):
         print("You clicked at this coordinate({0},{1})".format(x, y))
 
     # onscreen function to send coordinate
-    t.onscreenclick(buttonclick, 1)
+    t.onscreenclick(buttonclick, 1)"""
 
     # Set fokus pada turtle screen
     screen.listen()
