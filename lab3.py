@@ -277,11 +277,11 @@ if __name__ == "__main__":
     def check_all_collisions():
         global collided
         for line in line_list:
-            if is_collided(t.pos(), line[0], line[1]):
+            if is_collided(t.pos(), line[0], line[1]) and not collided:
                 print("Dinding tertabrak! Kembali ke titik awal...")
                 collided = True
                 break
-        screen.ontimer(check_all_collisions, 10)  # Call again after 10 ms
+        screen.ontimer(check_all_collisions, 1)  # Call again after 1 ms
 
     # OPTIONAL
     # Buat callback ke onscreenclick() agar memudahkan perhitungan koordinat
@@ -291,122 +291,8 @@ if __name__ == "__main__":
     # onscreen function to send coordinate
     t.onscreenclick(buttonclick, 1)
 
-    # OPTIONAL
-    # Buat callback ke onkey() untuk mengetes setiap gerakan dengan keyboard
-    screen.onkey(lambda: move("up", 10), "Up")
-    screen.onkey(lambda: move("down", 10), "Down")
-    screen.onkey(lambda: move("left", 10), "Left")
-    screen.onkey(lambda: move("right", 10), "Right")
-
     # Set fokus pada turtle screen
     screen.listen()
-    movement_path = []
-    '''
-    movement_path = [
-        ("left", 60),
-        ("up", 30),
-        ("left", 70),
-        ("down", 20),
-        ("left", 80),
-        ("up", 20),
-        ("left", 20),
-        ("up", 10),
-        ("left", 40),
-        ("down", 80),
-        ("right", 30),
-        ("down", 15),
-        ("left", 40),
-        ("down", 15),
-        ("right", 60),
-        ("down", 10),
-        ("left", 70),
-        ("down", 10),
-        ("left", 70),
-        ("down", 20),
-        ("left", 40),
-        ("up", 60),
-        ("right", 30),
-        ("up", 30),
-        ("left", 30),
-        ("up", 100),
-        ("left", 10),
-        ("up", 20),
-        ("right", 90),
-        ("down", 30),
-        ("right", 30),
-        ("up", 30),
-        ("right", 20),
-        ("down", 30),
-        ("right", 30),
-        ("up", 50),
-        ("left", 180),
-        ("up", 30),
-        ("right", 50),
-        ("up", 20),
-        ("left", 240),
-        ("up", 20),
-        ("right", 240),
-        ("up", 10),
-        ("left", 260),
-        ("up", 20),
-        ("right", 250),
-        ("up", 20),
-        ("left", 270),
-        ("down", 20),
-        ("left", 20),
-        ("down", 40),
-        ("right", 10),
-        ("down", 10),
-        ("right", 20),
-        ("down", 20),
-        ("right", 140),
-        ("down", 60),
-        ("right", 30),
-        ("down", 90),
-        ("right", 10),
-        ("down", 70),
-        ("left", 20),
-        ("down", 90),
-        ("right", 90),
-        ("down", 70),
-        ("left", 90),
-        ("down", 10),
-        ("left", 20),
-        ("up", 40),
-        ("left", 80),
-        ("up", 40),
-        ("right", 80),
-        ("up", 60),
-        ("left", 70),
-        ("up", 20),
-        ("right", 40),
-        ("up", 160),
-        ("left", 20),
-        ("down", 20),
-        ("left", 20),
-        ("up", 20),
-        ("left", 40),
-        ("down", 20),
-        ("left", 20),
-        ("up", 20),
-        ("left", 30),
-        ("down", 20),
-        ("left", 40),
-        ("down", 80),
-        ("right", 30),
-        ("up", 60),
-        ("right", 125),
-        ("down", 100),
-        ("left", 105),
-        ("up", 80),
-        ("right", 90),
-        ("down", 60),
-        ("left", 70),
-        ("up", 40),
-        ("right", 40),
-        ("down", 20),
-        ("left", 10),
-    ]'''
 
     check_all_collisions()  # Pengecekan tabrakan dimulai
 
@@ -415,9 +301,15 @@ if __name__ == "__main__":
     t.delay(0)
 
     # Proses setiap gerakan
-    for movement in movement_path:
-        direction = movement[0]
-        distance = movement[1]
+    while True:
+        direction = input("Masukkan arah (up, down, left, right, end): ").lower()
+        distance = float(input("Masukkan jarak: "))
+        if direction not in ["up", "down", "left", "right", "end"]:
+            print("Arah tidak valid! Gunakan up, down, left, right, atau end.")
+            continue
+        if direction == "end":
+            moving = False
+            break
         move(direction, distance)
         while moving:
             continue
