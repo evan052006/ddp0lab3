@@ -190,16 +190,16 @@ def parse_point_string(point_Str: str) -> list[tuple[float, float]]:
 
 def draw_maze() -> list[tuple[tuple[float, float], tuple[float, float]]]:
     """
-    Menggambar skema pesawat dari ship_map.svg secara instan
+    Menggambar skema pesawat dari ship_map.cosmic secara instan
     Mengembalikan garis-garis pada skema pesawat
     """
     line_list = []
-    xml_tree = ET.parse("ship_map.cosmic")  # Load .svg sebagai pohon xml
-    namespaces = {"ns": "http://cosmic.cs"}  # Set namespace svg
+    xml_tree = ET.parse("ship_map.cosmic")  # Load .cosmic sebagai pohon xml
+    namespaces = {"ns": "http://cosmic.cs"}  # Set namespace cosmic
     # Format namespace {<namespace>}<tag> (abaikan < dan >)
     # maka +2 kurung luar
     namespace_length = len(namespaces["ns"]) + 2
-    # Gunakan library untuk list semua elemen dibawah namespace svg
+    # Gunakan library untuk list semua elemen dibawah namespace cosmic
     for element in xml_tree.iterfind(".//ns:*", namespaces):
         # Ambil tagnya saja (skip namespace dan kurung kurawal)
         match element.tag[namespace_length:]:
