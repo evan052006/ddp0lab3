@@ -2,12 +2,14 @@ import turtle as t
 import math
 import xml.etree.ElementTree as ET
 
-moving = False
-collided = False
-cockpit_coor = (350.0, 10.0)
-escape_pod_coor = (-250.0, -10.0)
-trail: list[tuple[tuple[float, float], tuple[float, float]]] = []
+moving = False # Flag saat turtle bergerak
+collided = False # Flag saat turtle tertabrak garis
+cockpit_coor = (350.0, 10.0) # Koordinat awal
+escape_pod_coor = (-250.0, -10.0) # Koordinat akhir
+# List garis tembok pada skema pesawat
 line_list: list[tuple[tuple[float, float], tuple[float, float]]] = []
+
+# TODO lengkapi kode tersebut
 tracker = t.Turtle()
 tracker.color("blue")
 tracker.hideturtle()
@@ -31,6 +33,7 @@ def draw_line(
 def process_movement(direction: str, distance: float) -> None:
     """
     Menggerakkan turtle berdasarkan perintah movement
+    Note: Pastikan turtle dimulai dan diakhirkan dengan pendown
     """
     # TODO lengkapi kode tersebut
     if direction == "up":
@@ -49,7 +52,7 @@ def move(direction: str, distance: float) -> None:
     Memproses dan mendeteksi setiap gerakan turtle
     """
     # Keyword global agar variabel berikut bisa diakses dari scope local
-    global collided, moving, trail, cockpit_coor
+    global collided, moving, cockpit_coor
 
     # Move dibatalkan jika masih ada movement lain
     if moving:
@@ -67,20 +70,9 @@ def move(direction: str, distance: float) -> None:
 
     # Simpan posisi sebelum gerakan
     old_position = t.position()
-    old_angle = t.heading()
 
     # Proses gerakan (turtle digerakkan)
     process_movement(direction, distance)
-
-    new_angle = t.heading()
-
-    if old_angle != new_angle:
-        trail.append(old_position)
-        marker = t.Turtle(shape="circle")
-        marker.turtlesize(0.25)
-        marker.penup()
-        marker.goto(old_position)
-        marker.stamp()
 
     # Gambar tracker turtle
     new_position = t.position()
@@ -176,7 +168,6 @@ def parse_point_string(point_Str: str) -> list[tuple[float, float]]:
     Mengubah string koordinat menjadi list dari tuple points
     Ex. "12.34,56.78 87.65,43.21" -> [(12.34, 56.78), (87.65, 43.21)]
     """
-
     # TODO lengkapi kode tersebut
     points_list = []
     point_pairs = point_Str.strip().split()
@@ -249,7 +240,7 @@ def draw_maze() -> list[tuple[tuple[float, float], tuple[float, float]]]:
 def init_screen() -> t._Screen:
     """
     Initialisasi turtle Screen dengan
-    - Setup window seukuran 1500x1000
+    - Setup window seukuran 800x600
     - Title "COSMIC Escape Simulator"
     Lalu kembalikan objek Screen tersebut
     """
@@ -283,13 +274,15 @@ if __name__ == "__main__":
                 break
         screen.ontimer(check_all_collisions, 1)  # Call again after 1 ms
 
-    """# OPTIONAL
+    """
+    # OPTIONAL
     # Buat callback ke onscreenclick() agar memudahkan perhitungan koordinat
     def buttonclick(x, y):
         print("You clicked at this coordinate({0},{1})".format(x, y))
 
     # onscreen function to send coordinate
-    t.onscreenclick(buttonclick, 1)"""
+    t.onscreenclick(buttonclick, 1)
+    """
 
     # Set fokus pada turtle screen
     screen.listen()
@@ -313,8 +306,7 @@ if __name__ == "__main__":
         move(direction, distance)
         while moving:
             continue
-        if math.dist(t.pos(), escape_pod_coor) < 2:
-            print(trail)
+        if math.dist(t.pos(), escape_pod_coor) < 25:
             print("Berhasil kabur!")
             t.done()
             exit(0)
