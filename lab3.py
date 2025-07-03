@@ -296,20 +296,19 @@ if __name__ == "__main__":
     # Proses setiap gerakan
     while True:
         direction = input("Masukkan arah (up, down, left, right, end): ").lower()
-        distance = float(input("Masukkan jarak: "))
-        if direction not in ["up", "down", "left", "right", "end"]:
-            print("Arah tidak valid! Gunakan up, down, left, right, atau end.")
-            continue
         if direction == "end":
             moving = False
             break
+        if direction not in ["up", "down", "left", "right", "end"]:
+            print("Arah tidak valid! Gunakan up, down, left, right, atau end.")
+            continue
+        distance = float(input("Masukkan jarak: "))    
         move(direction, distance)
         while moving:
             continue
         if math.dist(t.pos(), escape_pod_coor) < 25:
             print("Berhasil kabur!")
             t.done()
-            exit(0)
 
     print("Path tidak mencapai destinasi...")
     t.done()
