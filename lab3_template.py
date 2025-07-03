@@ -240,7 +240,7 @@ if __name__ == "__main__":
 
 
     # TODO: Proses setiap gerakan (up, down, left, right, end)
-    # Hint: berhasil keluar apabila turtle berjarak kurang dari 2 pixel dari escape_pod_coor, gunakan math.dist
+    # Hint: berhasil keluar apabila turtle berjarak kurang dari 25 pixel dari escape_pod_coor, gunakan math.dist
     ...
 
     t.done()
