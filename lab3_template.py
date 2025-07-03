@@ -2,45 +2,15 @@ import turtle as t
 import math
 import xml.etree.ElementTree as ET
 
-moving = False # Flag saat turtle bergerak
-collided = False # Flag saat turtle tertabrak garis
-cockpit_coor = (350.0, 10.0) # Koordinat awal
-escape_pod_coor = (-250.0, -10.0) # Koordinat akhir
-# List garis tembok pada skema pesawat
+moving = False
+collided = False
+cockpit_coor = (350.0, 10.0)
+escape_pod_coor = (-250.0, -10.0)
+trail: list[tuple[tuple[float, float], tuple[float, float]]] = []
 line_list: list[tuple[tuple[float, float], tuple[float, float]]] = []
-
-# TODO lengkapi kode tersebut
-# tracker = ... # Buat objek turtle baru sebagai tracker
-# Set warna tracker jadi biru
-# Pastikan tracker menyembunyikan turtlenya
-
-
-def init_screen() -> t._Screen:
-    """
-    Initialisasi turtle Screen dengan
-    - Setup window seukuran 800x600
-    - Title "COSMIC Escape Simulator"
-    Lalu kembalikan objek Screen tersebut
-    """
-    # TODO lengkapi kode tersebut
-    return None
-
-
-def draw_grid(size: int, spacing: int) -> None:
-    """
-    Menggambarkan grid persegi dari (-size, -size) hingga (size, size)
-    - Secara instan dengan warna #d3d3d
-    - Dimulai dan diakhiri penup
-    """
-
-
-def parse_point_string(point_Str: str) -> list[tuple[float, float]]:
-    """
-    Mengubah string koordinat menjadi list dari tuple points
-    Ex. "12.34,56.78 87.65,43.21" -> [(12.34, 56.78), (87.65, 43.21)]
-    """
-    # TODO lengkapi kode tersebut
-    return []
+tracker = t.Turtle()
+tracker.color("blue")
+tracker.hideturtle()
 
 
 def draw_line(
@@ -51,7 +21,119 @@ def draw_line(
     Note: Pastikan turtle dimulai dan diakhirkan dengan penup
     """
     # TODO lengkapi kode tersebut
-    
+    ...
+
+
+def process_movement(direction: str, distance: float) -> None:
+    """
+    Menggerakkan turtle berdasarkan perintah movement (up, down, left, right)
+    """
+    # TODO lengkapi kode tersebut
+    ...
+
+
+def move(direction: str, distance: float) -> None:
+    """
+    Memproses dan mendeteksi setiap gerakan turtle
+    """
+    # Keyword global agar variabel berikut bisa diakses dari scope local
+    global collided, moving, trail, cockpit_coor
+
+    # Move dibatalkan jika masih ada movement lain
+    if moving:
+        return
+
+    moving = True
+
+    # TODO: Jika tertabrak, ulang dari awal (dan reset tracker ke posisi cockpit_coor)
+    # Hint: gunakan is_collided() untuk mengecek tabrakan dan gunakan variabel variabel global
+    ...
+
+    # Simpan posisi sebelum gerakan
+    old_position = t.position()
+    old_angle = t.heading()
+
+    # Proses gerakan (turtle digerakkan)
+    process_movement(direction, distance)
+
+    new_angle = t.heading()
+
+    if old_angle != new_angle:
+        trail.append(old_position)
+        marker = t.Turtle(shape="circle")
+        marker.turtlesize(0.25)
+        marker.penup()
+        marker.goto(old_position)
+        marker.stamp()
+
+    # TODO: Gambar garis tracker turtle dari posisi lama (old_position) ke posisi saat ini
+    ...
+
+    # TODO: Jika tertabrak, ulang dari awal (dan reset tracker ke posisi cockpit_coor)
+    # Hint: gunakan is_collided() untuk mengecek tabrakan dan gunakan variabel variabel global
+    ...
+
+    moving = False
+
+
+def distance_to_line_segment(
+    point: tuple[float, float],
+    line_start: tuple[float, float],
+    line_end: tuple[float, float],
+) -> float:
+    """
+    Mengembalikan jarak terdekat suatu titik (point) ke segment garis tertentu
+    """
+    px = point[0]
+    py = point[1]
+    x1 = line_start[0]
+    y1 = line_start[1]
+    x2 = line_end[0]
+    y2 = line_end[1]
+
+    if x1 == x2 and y1 == y2:
+        return math.hypot(px - x1, py - y1)
+
+    dx = x2 - x1
+    dy = y2 - y1
+    length_squared = dx * dx + dy * dy
+    t = max(0, min(1, ((px - x1) * dx + (py - y1) * dy) / length_squared))
+
+    proj_x = x1 + t * dx
+    proj_y = y1 + t * dy
+
+    return math.hypot(px - proj_x, py - proj_y)
+
+
+def is_collided(
+    turtle_point: tuple[float, float],
+    line_start: tuple[float, float],
+    line_end: tuple[float, float],
+) -> bool:
+    """
+    Mengecek apakah turtle menabrak dinding
+    (tabrakan terjadi jika jarak turtle dengan dinding kurang dari 5)
+    """
+    # TODO lengkapi kode tersebut
+    ...
+
+
+def draw_grid(size: int, spacing: int) -> None:
+    """
+    Menggambarkan grid persegi dari (-size, -size) hingga (size, size)
+    secara instan dengan warna #d3d3d3
+    """
+    # TODO lengkapi kode tersebut
+    ...
+
+def parse_point_string(point_Str: str) -> list[tuple[float, float]]:
+    """
+    Mengubah string koordinat menjadi list dari tuple points
+    Ex. "12.34,56.78 87.65,43.21" -> [(12.34, 56.78), (87.65, 43.21)]
+    """
+
+    # TODO lengkapi kode tersebut
+    ...
 
 
 def draw_maze() -> list[tuple[tuple[float, float], tuple[float, float]]]:
@@ -112,95 +194,15 @@ def draw_maze() -> list[tuple[tuple[float, float], tuple[float, float]]]:
     return line_list
 
 
-def distance_to_line_segment(
-    point: tuple[float, float],
-    line_start: tuple[float, float],
-    line_end: tuple[float, float],
-) -> float:
+def init_screen() -> t._Screen:
     """
-    Mengembalikan jarak terdekat suatu titik (point) ke segment garis tertentu
-    """
-    px = point[0]
-    py = point[1]
-    x1 = line_start[0]
-    y1 = line_start[1]
-    x2 = line_end[0]
-    y2 = line_end[1]
-
-    if x1 == x2 and y1 == y2:
-        return math.hypot(px - x1, py - y1)
-
-    dx = x2 - x1
-    dy = y2 - y1
-    length_squared = dx * dx + dy * dy
-    t = max(0, min(1, ((px - x1) * dx + (py - y1) * dy) / length_squared))
-
-    proj_x = x1 + t * dx
-    proj_y = y1 + t * dy
-
-    return math.hypot(px - proj_x, py - proj_y)
-
-
-def is_collided(
-    turtle_point: tuple[float, float],
-    line_start: tuple[float, float],
-    line_end: tuple[float, float],
-) -> bool:
-    """
-    Mengecek apakah turtle menabrak dinding
-    (tabrakan terjadi jika jarak turtle dengan dinding kurang dari 5)
+    Initialisasi turtle Screen dengan
+    - Setup window seukuran 1500x1000
+    - Title "COSMIC Escape Simulator"
+    Lalu kembalikan objek Screen tersebut
     """
     # TODO lengkapi kode tersebut
-    return False
-
-
-def process_movement(direction: str, distance: float) -> None:
-    """
-    Menggerakkan turtle berdasarkan perintah movement
-    Note: Pastikan turtle dimulai dan diakhirkan dengan pendown
-    """
-    # TODO lengkapi kode tersebut
-
-
-def move(direction: str, distance: float) -> None:
-    """
-    Memproses dan mendeteksi setiap gerakan turtle
-    """
-    # Keyword global agar variabel berikut bisa diakses dari scope local
-    global collided, moving, cockpit_coor
-
-    # Move dibatalkan jika masih ada movement lain
-    if moving:
-        return
-
-    moving = True
-
-    # Jika tertabrak, ulang dari awal (dan reset tracker)
-    if collided:
-        t.goto(cockpit_coor)
-        tracker.clear()
-        collided = False
-        moving = False
-        return
-
-    # Simpan posisi sebelum gerakan
-    old_position = t.position()
-
-    # Proses gerakan (turtle digerakkan)
-    process_movement(direction, distance)
-
-    # TODO lengkapi kode tersebut
-    # Gambar tracker turtle (secara instan)
-
-    # Kita cek collision lagi
-    if collided:
-        t.goto(cockpit_coor)
-        tracker.clear()
-        collided = False
-        moving = False
-        return
-
-    moving = False
+    ...
 
 
 if __name__ == "__main__":
@@ -226,15 +228,6 @@ if __name__ == "__main__":
                 break
         screen.ontimer(check_all_collisions, 1)  # Call again after 1 ms
 
-    """
-    # OPTIONAL
-    # Buat callback ke onscreenclick() agar memudahkan perhitungan koordinat
-    def buttonclick(x, y):
-        print("You clicked at this coordinate({0},{1})".format(x, y))
-
-    # onscreen function to send coordinate
-    t.onscreenclick(buttonclick, 1)
-    """
 
     # Set fokus pada turtle screen
     screen.listen()
@@ -245,23 +238,9 @@ if __name__ == "__main__":
     t.speed(0)
     t.delay(0)
 
-    # Proses setiap gerakan
-    while True:
-        direction = input("Masukkan arah (up, down, left, right, end): ").lower()
-        distance = float(input("Masukkan jarak: "))
-        if direction not in ["up", "down", "left", "right", "end"]:
-            print("Arah tidak valid! Gunakan up, down, left, right, atau end.")
-            continue
-        if direction == "end":
-            moving = False
-            break
-        move(direction, distance)
-        while moving:
-            continue
-        if math.dist(t.pos(), escape_pod_coor) < 25:
-            print("Berhasil kabur!")
-            t.done()
-            exit(0)
 
-    print("Path tidak mencapai destinasi...")
+    # TODO: Proses setiap gerakan (up, down, left, right, end)
+    # Hint: berhasil keluar apabila turtle berjarak kurang dari 2 pixel dari escape_pod_coor, gunakan math.dist
+    ...
+
     t.done()
